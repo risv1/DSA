@@ -1,77 +1,84 @@
 #include <stdio.h>
 #include <stdlib.h>
  
-int MAX_SIZE = 100; // Define a maximum size for the queue
+// Structure for storing queue data
+struct node {
+    int data;
+    struct node *next;
+};
  
-int queue[100]; // Array to store the queue elements
-int front = -1; // Initialize front and rear to -1 to indicate an empty queue
-int rear = -1;
+struct node *front = NULL;
+struct node *rear = NULL;
+ 
 int queueSize = 0; // Initialize the queue size to 0
  
-int isFull() {
-    return queueSize == MAX_SIZE;
-}
- 
-int isEmpty() {
-    return front == -1;
-}
- 
 void displayQueue() {
-    if (isEmpty()) {
+    struct node *current = front;
+    if (current == NULL) {
         printf("Queue is empty.\n");
         return;
     }
  
     printf("Queue elements: ");
-    for (int i = front; i <= rear; i++) {
-        printf("%d -> ", queue[i]);
+    while (current != NULL) {
+        printf("%d -> ", current->data);
+        current = current->next;
     }
     printf("\n");
 }
  
 void enqueue(int data) {
-    if (isFull()) {
-        printf("Queue is full. Cannot enqueue.\n");
-        return;
-    }
+    if (queueSize > 0) {
+        struct node *newNode = (struct node *)malloc(sizeof(struct node));
+        if (newNode == NULL) {
+            printf("Queue is full. Cannot enqueue.\n");
+            return;
+        }
+        newNode->data = data;
+        newNode->next = NULL;
  
-    if (isEmpty()) {
-        front = rear = 0;
+        if (rear == NULL) {
+            front = rear = newNode;
+        } else {
+            rear->next = newNode;
+            rear = newNode;
+        }
+ 
+        queueSize--;
+        printf("Enqueued Successfully\n");
+        displayQueue();
     } else {
-        rear = (rear + 1) % MAX_SIZE;
+        printf("Queue is full. Cannot enqueue.\n");
     }
- 
-    queue[rear] = data;
-    queueSize++;
-    printf("Enqueued Successfully\n");
-    displayQueue();
 }
  
 int dequeue() {
-    if (isEmpty()) {
+    if (front == NULL) {
         printf("Queue is empty. Cannot dequeue.\n");
         return -1;
     }
  
-    int dequeued = queue[front];
+    struct node *temp = front;
+    int dequeued = temp->data;
  
-    if (front == rear) {
-        front = rear = -1;
-    } else {
-        front = (front + 1) % MAX_SIZE;
+    front = front->next;
+    free(temp);
+ 
+    if (front == NULL) {
+        rear = NULL;
     }
  
-    queueSize--;
+    queueSize++;
     displayQueue();
     return dequeued;
 }
  
 int main() {
     int choice, value;
-    printf("\nImplementation of Queue using Array\n");
+    printf("\nImplementation of Queue using Linked List\n");
  
-    printf("\nEnter the maximum size of the queue: ");
-    scanf("%d", &MAX_SIZE);
+    printf("\nEnter the size of the queue: ");
+    scanf("%d", &queueSize);
  
     while (1) {
         printf("\n1. Enqueue\n2. Dequeue\n3. Display\n4. Exit\n");
@@ -79,20 +86,12 @@ int main() {
         scanf("%d", &choice);
         switch (choice) {
         case 1:
-            if (!isFull()) {
-                printf("\nEnter the value to enqueue: ");
-                scanf("%d", &value);
-                enqueue(value);
-            } else {
-                printf("Queue is full. Cannot enqueue.\n");
-            }
+            printf("\nEnter the value to enqueue: ");
+            scanf("%d", &value);
+            enqueue(value);
             break;
         case 2:
-            if (!isEmpty()) {
-                printf("Dequeued element is: %d\n", dequeue());
-            } else {
-                printf("Queue is empty. Cannot dequeue.\n");
-            }
+            printf("Dequeued element is: %d\n", dequeue());
             break;
         case 3:
             displayQueue();
