@@ -31,6 +31,7 @@ void insertAtEnd(int element) {
         }
         temp->next = newNode;
     }
+    newNode->next = head;
     printf("Element %d inserted at the end.\n", element);
 }
 
@@ -115,13 +116,31 @@ void displayList() {
         printf("The linked list is empty.\n");
     } else {
         printf("Linked List: ");
-        while (temp != NULL) {
+        do {
             printf("%d -> ", temp->data);
             temp = temp->next;
-        }
-        printf("NULL\n");
+        }  while (temp != head);
+        printf("(back to first) \n");
     }
 }
+
+void reverseList() {
+    struct Node *current = head;
+    struct Node *prev = NULL;
+    struct Node *next;
+
+    do {
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
+    } while (current != head);
+
+    current->next = prev; 
+    head = prev;     
+    printf("Linked List reversed successfully.\n");
+}
+
 
 int main() {
     int choice, element, position;
@@ -134,7 +153,8 @@ int main() {
         printf("4. Delete Element\n");
         printf("5. Search Element\n");
         printf("6. Display Linked List\n");
-        printf("7. Exit\n");
+        printf("7. Reverse Linked List\n");
+        printf("8. Exit\n");
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -170,6 +190,9 @@ int main() {
                 displayList();
                 break;
             case 7:
+                reverseList();
+                break;
+            case 8:
                 printf("Exiting...\n");
                 exit(0);
             default:
